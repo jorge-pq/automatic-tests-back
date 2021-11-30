@@ -15,7 +15,8 @@ const cors = require("cors")
 		app.use(express.json()) 
 		app.use("/api", routes)
 
-		app.listen(5000, () => {
-			console.log("Server has started!")
-		})
+		const PORT = process.env.PORT || 8080;
+		app.listen(PORT, () => {
+			console.log(`Server is running on port ${PORT}.`);
+		});
 	// })
