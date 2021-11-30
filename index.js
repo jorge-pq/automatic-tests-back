@@ -6,10 +6,10 @@ const cors = require("cors")
 
 // const {DB_HOST, DB_PORT, DB_NAME, DB_PASSWORD} = CONFIG;
 
-// mongoose
-// 	.connect("mongodb+srv://jorge:bfnNlgS5gnhCdZhl@cluster0.cn88n.mongodb.net/booking?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true })
-// 	//.connect(`mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`, { useNewUrlParser: true })
-// 	.then(() => {
+mongoose
+	.connect("mongodb+srv://jorge:bfnNlgS5gnhCdZhl@cluster0.cn88n.mongodb.net/booking?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true })
+	//.connect(`mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`, { useNewUrlParser: true })
+	.then(() => {
 		const app = express()
 		app.use(cors())
 		app.use(express.json()) 
@@ -19,4 +19,4 @@ const cors = require("cors")
 		app.listen(PORT, () => {
 			console.log(`Server is running on port ${PORT}.`);
 		});
-	// })
+	})
