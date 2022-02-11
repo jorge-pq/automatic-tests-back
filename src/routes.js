@@ -124,17 +124,17 @@ router.post("/hotels/gallery", async (req, res) => {
 		if (req.files.length <= 0) {
 			return res.send(`You must select at least 1 file.`);
 		}
+		const hotel = await Hotel.findOne({ _id: req.body.id });
 		let imgs = [];
-		let main = req.files.main[0] ? req.files.main[0].originalname : null;
+		let main = req.files.main ? req.files.main[0].originalname : null;
 		if(main){
-			imgs.push({path: main, active: true});
+			hotel.cover = main;
 		}
 		let images = req.files.images ? req.files.images : [];
 		for (let index = 0; index < images.length; index++) {
 			imgs.push({path: images[index].originalname, active: true});
 		}
 
-		const hotel = await Hotel.findOne({ _id: req.body.id });
 		hotel.images = hotel.images.concat(imgs);
 		await hotel.save();
 		return res.send(`Files has been uploaded.`);
