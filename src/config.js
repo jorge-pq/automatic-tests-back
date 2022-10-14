@@ -1,15 +1,8 @@
-const CONFIG = {
-    NODE_ENV: 'development',
-    SECRET: 'aslkdlkaj108309jdfjdfjd54asd',
+const dotenv = require('dotenv');
+dotenv.config();
 
-    DB_USERNAME: '',
-    DB_PASSWORD: 'bfnNlgS5gnhCdZhl',
-    DB_HOST: '172.17.0.2', // cluster0.cn88n.mongodb.net,
-    DB_PORT: '27017',
-    DB_NAME: 'booking'
-
-};
+const DB = process.env.NODE_ENV === 'development' ? process.env.DB_CONECTION : process.env.DB_ATLAS_CONECTION
 
 module.exports = {
-    CONFIG
+    DB
 }
