@@ -14,13 +14,13 @@ module.exports = function(req,res,next){
             } else {
                 const {role, tenant} = decoded;
                 if(tenant){
-                    req.tenant = tenant;
-                    req.role = role;
+                    req.body.tenant = tenant;
+                    req.body.role = role;
                     next();
                 }
                 else{
                     if(role === "super_admin"){
-                        req.role = role;
+                        req.body.role = role;
                         next();
                     }
                     else{
