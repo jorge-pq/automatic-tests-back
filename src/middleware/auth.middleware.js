@@ -1,4 +1,5 @@
 const {secret} = require('../config').JWT;
+const jwt = require('jsonwebtoken');
 
 module.exports = function(req,res,next){
 
@@ -18,7 +19,8 @@ module.exports = function(req,res,next){
                     next();
                 }
                 else{
-                    if(req.role === "super_admin"){
+                    if(role === "super_admin"){
+                        req.role = role;
                         next();
                     }
                     else{
