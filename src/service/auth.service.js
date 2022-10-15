@@ -9,6 +9,16 @@ const register = async (data) => {
     return user;
 }
 
+const validateUser = async() => {
+    
+}
+
+const validateFields = (fullname, phone, password) => {
+    return fullname && phone && password
+}
+
 module.exports = {
-    register
+    register,
+    validateUser,
+    validateFields
 }

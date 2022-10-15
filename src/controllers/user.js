@@ -54,10 +54,10 @@ module.exports = function (app) {
 
 	app.post(path('add/user'), Auth, async (req, res) => {
 		try {
-			const tenant = await Tenant.findOne({
-				name: req.tenant
-			});
 			let req = req.body;
+			const tenant = await Tenant.findOne({
+				name: data.tenant
+			});
 			data.tenant = tenant._id;
 			let user = await register(req.body)
 			res.status(200).json(user);
