@@ -9,6 +9,7 @@ module.exports = function (app) {
     app.post(path('tenant/create'), Auth, async (req, res) => {
         try {
             let data = req.body;
+            const tenant = data.tenant ? await Tenant.findOne({ _id: data.tenant }) : '';
             if(data.role === "super_admin"){
                 if(validateFields(data.fullname, data.phone, data.password)){
                     data.type = WHOLESALER;
@@ -31,23 +32,22 @@ module.exports = function (app) {
                 }
                
             }
-            if(data.tenant === WHOLESALER){
+            if(tenant.type === WHOLESALER){
                 if(validateFields(data.fullname, data.phone, data.password)){
-                const wholesaler = await Tenant.findOne({ name: data.tenant });
                 data.type = RETAIL;
-                data.tenant = wholesaler._id;
-                const tenant = new Tenant(data)
-                await tenant.save();  
+                data.tenant = tenant._id;
+                const newTenant = new Tenant(data)
+                await newTenant.save();  
                 await register({
                     fullname: data.fullname,
                     username: data.phone,
                     phone: data.phone,
                     password: data.password,
                     role: "administrator",
-                    tenant: tenant._id
+                    tenant: newTenant._id
                 })
-                Tenant.updateOne({'_id': wholesaler._id}, {'$push':  {brokers: tenant}})
-                res.status(200).json(tenant);
+                Tenant.updateOne({'_id': tenant._id}, {'$push':  {brokers: newTenant}})
+                res.status(200).json(newTenant);
                 return;   
                 }
                 else{
