@@ -46,7 +46,7 @@ module.exports = function (app) {
                     role: "administrator",
                     tenant: newTenant._id
                 })
-                Tenant.updateOne({'_id': tenant._id}, {'$push':  {brokers: newTenant}})
+                const t = await Tenant.updateOne({_id: tenant._id}, {'$push':  {brokers: newTenant}})
                 res.status(200).json(newTenant);
                 return;   
                 }
