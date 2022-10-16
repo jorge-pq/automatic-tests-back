@@ -2,7 +2,7 @@ const User = require("../models/User");
 const Tenant = require("../models/Tenant")
 const {Sign} = require("../service/jwtAuth");
 const { path } = require("../config");
-const {register} = require('../service/auth.service');
+const {register, validateFields, validateUser} = require('../service/auth.service');
 const Auth = require('../middleware/auth.middleware');
 
 module.exports = function (app) {
@@ -54,19 +54,33 @@ module.exports = function (app) {
 
 	app.post(path('add/user'), Auth, async (req, res) => {
 		try {
-			let req = req.body;
-			const tenant = await Tenant.findOne({
-				name: data.tenant
-			});
-			data.tenant = tenant._id;
-			let user = await register(req.body)
-			res.status(200).json(user);
+			let data = req.body;
+			if(validateFields(data.fullname, data.phone, data.password)){
+				let isExist = await validateUser(data.phone, data.tenant);
+				if(!isExist){
+					let user = await register({
+						fullname: data.fullname,
+						username: data.phone,
+						phone: data.phone,
+						password: data.password,
+						role: data.userRole || "administrator",
+						tenant: data.tenant
+					})
+					res.status(200).json(user);
+				}
+				else{
+					res.status(400).json({error: "User already exists!"});
+				}
+			}
+			else{
+				res.status(400).json({error: "fields missing"});
+			}
+			
 		} catch (error) {
 			res.status(500).json({
 				error: error,
 			});
 		}
 	})
-
 
 }

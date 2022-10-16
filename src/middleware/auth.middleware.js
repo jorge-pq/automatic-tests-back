@@ -12,10 +12,11 @@ module.exports = function(req,res,next){
                     'Unauthorized': 'Invalid token'
                 });
             } else {
-                const {role, tenant} = decoded;
+                const {username, role, tenant} = decoded;
                 if(tenant){
                     req.body.tenant = tenant;
                     req.body.role = role;
+                    req.body.username = username;
                     next();
                 }
                 else{

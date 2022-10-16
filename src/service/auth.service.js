@@ -9,8 +9,9 @@ const register = async (data) => {
     return user;
 }
 
-const validateUser = async() => {
-    
+const validateUser = async(username, tenantId) => {
+    const user = await User.findOne({ username: username, tenant: tenantId })
+    return user ? true : false
 }
 
 const validateFields = (fullname, phone, password) => {
