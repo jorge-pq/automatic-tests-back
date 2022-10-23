@@ -13,7 +13,7 @@ module.exports = function (app) {
 		try {
 			const user = await User.findOne({
 				username: username
-			});
+			}).populate('tenant');
 			if (!user) {
 				res.status(401).json({
 					error: "Username not exist",
