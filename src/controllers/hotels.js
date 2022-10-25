@@ -1,3 +1,5 @@
+const Auth = require('../middleware/auth.middleware');
+const Tenant = require("../models/Tenant")
 const Hotel = require("../models/Hotel")
 const upload = require("../middleware/upload");
 const {path} = require("../config");
@@ -12,24 +14,29 @@ app.get(path(), async (req, res) => {
 
 // ------------ Hotels controller -------------
 
-app.get(path("hotels"), async (req, res) => {
-	const hotels = await Hotel.find()
+app.get(path("hotels"), Auth, async (req, res) => {
+	let data = req.body;
+	const hotels = await Hotel.find({ tenant: data.tenant })
 	res.send(hotels)
 })
 
-app.post(path("hotels/create"), async (req, res) => {
-	const hotel = new Hotel(req.body)
-	await hotel.save()
-	res.send(hotel)
+app.post(path("hotels/create"), Auth, async (req, res) => {
+	let data = req.body;
+	const tenant = await Tenant.findOne({ _id: data.tenant });
+	const hotel = new Hotel(req.body);
+	hotel.tenant = tenant;
+	await hotel.save();
+	await Tenant.updateOne({_id: tenant._id}, {'$push':  {hotels: newTenant}})
+	res.send(hotel);
 })
 
 
-app.get(path("hotel/:id"), async (req, res) => {
+app.get(path("hotel/:id"), Auth, async (req, res) => {
 	const hotel = await Hotel.findOne({ _id: req.params.id });
 	res.send(hotel)
 })
 
-app.put(path("hotel/:id"), async (req, res) => {
+app.put(path("hotel/:id"), Auth, async (req, res) => {
 	try {
 		const hotel = await Hotel.findOne({ _id: req.params.id })
 
@@ -46,7 +53,7 @@ app.put(path("hotel/:id"), async (req, res) => {
 	}
 })
 
-app.delete(path("hotel/:id"), async (req, res) => {
+app.delete(path("hotel/:id"), Auth, async (req, res) => {
 	try {
 		await Hotel.deleteOne({ _id: req.params.id })
 		res.status(204).send()
@@ -56,7 +63,7 @@ app.delete(path("hotel/:id"), async (req, res) => {
 	}
 })
 
-app.get(path("hotel/slug/:slug"), async (req, res) => {
+app.get(path("hotel/slug/:slug"), Auth, async (req, res) => {
 	const hotel = await Hotel.findOne({ slug: req.params.slug });
 	res.send(hotel)
 })
@@ -65,7 +72,7 @@ app.get(path("hotel/slug/:slug"), async (req, res) => {
 // --------------------- Room Controller -----------------------------
 
 
-app.put(path("room/add/:id"), async (req, res) => {
+app.put(path("room/add/:id"), Auth, async (req, res) => {
 	try {
 		const hotel = await Hotel.findOne({ _id: req.params.id })
 
@@ -83,7 +90,7 @@ app.put(path("room/add/:id"), async (req, res) => {
 	}
 })
 
-app.put(path("room/update/:id"), async (req, res) => {
+app.put(path("room/update/:id"), Auth, async (req, res) => {
 	try {
 		const hotel = await Hotel.findOne({ _id: req.params.id })
 
@@ -102,7 +109,7 @@ app.put(path("room/update/:id"), async (req, res) => {
 	}
 })
 
-app.put(path("room/remove"), async (req, res) => {
+app.put(path("room/remove"), Auth, async (req, res) => {
 	try {
 		const hotel = await Hotel.findOne({ _id: req.body.hotelId })
 		const update = hotel.rooms.filter(d=>d.name!==req.body.roomName);
@@ -118,7 +125,7 @@ app.put(path("room/remove"), async (req, res) => {
 
 //------------------------ Subir imagenes -----------------------------------
 
-app.post(path("hotels/gallery"), async (req, res) => {
+app.post(path("hotels/gallery"), Auth, async (req, res) => {
 	try {
 		await upload(req, res);
 		if (req.files.length <= 0) {
