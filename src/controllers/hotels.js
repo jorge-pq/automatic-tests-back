@@ -18,8 +18,16 @@ app.get(path(), async (req, res) => {
 
 app.get(path("hotels"), Auth, async (req, res) => {
 	let data = req.body;
-	const t = await Tenant.findOne({ _id: data.tenant }).populate('hotels');
-	res.send(t.hotels)
+	const tenant = await Tenant.findOne({ _id: data.tenant });
+	let result;
+	if(tenant.type === "Wholesaler"){
+		result = await Tenant.findOne({ _id: tenant._id }).populate('hotels');
+	}
+	else{
+		result = await Tenant.findOne({ _id: tenant.tenant }).populate('hotels');
+	}
+	
+	res.send(result.hotels)
 })
 
 app.post(path("hotels/create"), Auth, async (req, res) => {
