@@ -3,6 +3,8 @@ const Tenant = require("../models/Tenant")
 const Hotel = require("../models/Hotel")
 const upload = require("../middleware/upload");
 const {path} = require("../config");
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 module.exports = function(app){
 
@@ -16,8 +18,8 @@ app.get(path(), async (req, res) => {
 
 app.get(path("hotels"), Auth, async (req, res) => {
 	let data = req.body;
-	const hotels = await Hotel.find({ tenant: data.tenant })
-	res.send(hotels)
+	const t = await Tenant.findOne({ _id: data.tenant }).populate('hotels');
+	res.send(t.hotels)
 })
 
 app.post(path("hotels/create"), Auth, async (req, res) => {
@@ -26,7 +28,7 @@ app.post(path("hotels/create"), Auth, async (req, res) => {
 	const hotel = new Hotel(req.body);
 	hotel.tenant = tenant;
 	await hotel.save();
-	await Tenant.updateOne({_id: tenant._id}, {'$push':  {hotels: newTenant}})
+	await Tenant.updateOne({_id: tenant._id}, {'$push':  {hotels: hotel}})
 	res.send(hotel);
 })
 
@@ -55,7 +57,10 @@ app.put(path("hotel/:id"), Auth, async (req, res) => {
 
 app.delete(path("hotel/:id"), Auth, async (req, res) => {
 	try {
-		await Hotel.deleteOne({ _id: req.params.id })
+		let data = req.body;
+		await Hotel.deleteOne({ _id: req.params.id });
+		const tenant = await Tenant.findOne({ _id: data.tenant });
+		await Tenant.updateOne({_id: tenant._id}, {'$pull':  {hotels: req.params.id}})
 		res.status(204).send()
 	} catch {
 		res.status(404)

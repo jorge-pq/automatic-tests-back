@@ -6,7 +6,7 @@ const schema = mongoose.Schema({
 	name: String,
 	slug: String,
 	rooms: [Object],
-	images: [Object] ,
+	images: [Object],
 	cover: String,
 	tenant: { type: ObjectId, ref: "Tenant", required: false },
 })
