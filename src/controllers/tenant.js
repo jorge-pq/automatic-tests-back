@@ -56,7 +56,7 @@ module.exports = function (app) {
                 }
             }
             else{
-                res.status(400).json({error: "Unauthorized"});
+                res.status(403).json({error: "Unauthorized"});
             }
             
         } catch (error) {
@@ -64,6 +64,26 @@ module.exports = function (app) {
         }  
     })
 
-
+    app.get(path('tenant/brokers'), Auth, async (req, res) => {
+        try {
+            let data = req.body;
+            const tenant = data.tenant ? await Tenant.findOne({ _id: data.tenant }) : '';
+            if(data.role === "super_admin"){
+                const tenants = await Tenant.find({ type: WHOLESALER }).populate('brokers');
+                res.status(200).json(tenants);
+                return;  
+            }
+            if(tenant.type === WHOLESALER){
+                const tenants = await Tenant.find({ tenant: tenant._id, type: RETAIL });
+                res.status(200).json(tenants);
+                return;  
+            }
+            else{
+                res.status(403).json({error: "Unauthorized"});
+            }
+        } catch (error) {
+            res.status(400).json(error);
+        }  
+    })
 
 }
