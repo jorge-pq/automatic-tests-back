@@ -8,6 +8,7 @@ const schema = mongoose.Schema({
 	client: Object,
     hotel: Object,
     order: [Object],
+	state: String,
 	tenant: { type: ObjectId, ref: "Tenant", required: false },
 })
 
