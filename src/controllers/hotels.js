@@ -30,6 +30,20 @@ app.get(path("hotels"), Auth, async (req, res) => {
 	res.send(result.hotels)
 })
 
+app.get(path("hotels/active"), Auth, async (req, res) => {
+	let data = req.body;
+	const tenant = await Tenant.findOne({ _id: data.tenant });
+	let result;
+	if(tenant.type === "Wholesaler"){
+		result = await Tenant.findOne({ _id: tenant._id }).populate('hotels');
+	}
+	else{
+		result = await Tenant.findOne({ _id: tenant.tenant }).populate('hotels');
+	}
+	
+	res.send(result.hotels.filter(d=>d.active===true))
+})
+
 app.post(path("hotels/create"), Auth, async (req, res) => {
 	let data = req.body;
 	const tenant = await Tenant.findOne({ _id: data.tenant });
@@ -53,6 +67,12 @@ app.put(path("hotel/:id"), Auth, async (req, res) => {
 		if (req.body.name) {
 			hotel.name = req.body.name;
 			hotel.slug = req.body.slug;
+			hotel.country = req.body.country,
+			hotel.state = req.body.state,
+			hotel.city = req.body.city,
+			hotel.zipCode = req.body.zipCode,
+			hotel.address = req.body.address,
+			hotel.active = req.body.active
 		}
 
 		await hotel.save()
