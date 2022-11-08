@@ -28,4 +28,10 @@ app.post(path("booking/create"), Auth, async (req, res) => {
 	res.send(booking);
 })
 
+app.get(path("booking/:id"), Auth, async (req, res) => {
+	const booking = await Booking.findOne({ _id: req.params.id });
+	res.send(booking)
+})
+
+
 }
