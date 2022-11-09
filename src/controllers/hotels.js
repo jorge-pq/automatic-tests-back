@@ -65,6 +65,7 @@ app.put(path("hotel/:id"), Auth, async (req, res) => {
 		const hotel = await Hotel.findOne({ _id: req.params.id })
 
 		if (req.body.name) {
+			hotel.code = req.body.code;
 			hotel.name = req.body.name;
 			hotel.slug = req.body.slug;
 			hotel.country = req.body.country,
