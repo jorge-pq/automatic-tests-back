@@ -18,9 +18,16 @@ let DEFAULT_USER = {
     role: "super_admin"
 }  
 
+let CLOUDINARY_CONFIG = {
+    NAME: process.env.ClOUDINARY_NAME,
+    API_KEY: process.env.ClOUDINARY_API_KEY,
+    API_SECRET: process.env.ClOUDINARY_API_SECRET,
+}
+
 module.exports = {
     DB,
     path: (value)=>`${PREFIX}${value || ''}`,
     JWT,
-    DEFAULT_USER
+    DEFAULT_USER,
+    CLOUDINARY_CONFIG
 }

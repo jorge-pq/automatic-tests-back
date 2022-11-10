@@ -1,7 +1,8 @@
 const Auth = require('../middleware/auth.middleware');
 const Tenant = require("../models/Tenant")
 const Hotel = require("../models/Hotel")
-const upload = require("../middleware/upload");
+const uploader = require("../middleware/multer");
+const {upload} = require("../service/cloud.service");
 const {path} = require("../config");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Schema.Types.ObjectId;
@@ -159,33 +160,68 @@ app.put(path("room/remove"), Auth, async (req, res) => {
 
 //------------------------ Subir imagenes -----------------------------------
 
+// ----------- Usando multer ------------------
+// app.post(path("hotels/gallery"), Auth, async (req, res) => {
+// 	try {
+// 		await upload(req, res);
+// 		if (req.files.length <= 0) {
+// 			return res.send(`You must select at least 1 file.`);
+// 		}
+// 		const hotel = await Hotel.findOne({ _id: req.body.id });
+// 		let imgs = [];
+// 		let main = req.files.main ? req.files.main[0].originalname : null;
+// 		if(main){
+// 			hotel.cover = main;
+// 		}
+// 		let images = req.files.images ? req.files.images : [];
+// 		for (let index = 0; index < images.length; index++) {
+// 			imgs.push({path: images[index].originalname, active: true});
+// 		}
+
+// 		hotel.images = hotel.images.concat(imgs);
+// 		await hotel.save();
+// 		return res.send(`Files has been uploaded.`);
+// 	} catch (error) {
+// 		console.log(error);
+// 		if (error.code === "LIMIT_UNEXPECTED_FILE") {
+// 			return res.send("Too many files to upload.");
+// 		}
+// 		return res.send(`Error when trying upload many files: ${error}`);
+// 	}
+// })
+
+// ----------- Usando cloudinary ------------------
 app.post(path("hotels/gallery"), Auth, async (req, res) => {
 	try {
-		await upload(req, res);
-		if (req.files.length <= 0) {
+		await uploader(req, res);
+		if (req.files) {
+			const hotel = await Hotel.findOne({ _id: req.body.id });
+			let imgs = [];
+			let main = req.files.main ? req.files.main[0].originalname : null;
+			if(main){
+				let url = await upload(req.files.main[0].path);
+				hotel.cover = url;
+			}
+			let images = req.files.images ? req.files.images : [];
+			for (let index = 0; index < images.length; index++) {
+				let url = await upload(images[index].path);
+				imgs.push({path: url, active: true});
+			}
+		
+			hotel.images = hotel.images.concat(imgs);
+			await hotel.save();
+			res.status(200);
+			return res.send(`Files has been uploaded.`);
+		} else {
+			res.status(400);
 			return res.send(`You must select at least 1 file.`);
 		}
-		const hotel = await Hotel.findOne({ _id: req.body.id });
-		let imgs = [];
-		let main = req.files.main ? req.files.main[0].originalname : null;
-		if(main){
-			hotel.cover = main;
-		}
-		let images = req.files.images ? req.files.images : [];
-		for (let index = 0; index < images.length; index++) {
-			imgs.push({path: images[index].originalname, active: true});
-		}
-
-		hotel.images = hotel.images.concat(imgs);
-		await hotel.save();
-		return res.send(`Files has been uploaded.`);
 	} catch (error) {
 		console.log(error);
-		if (error.code === "LIMIT_UNEXPECTED_FILE") {
-			return res.send("Too many files to upload.");
-		}
-		return res.send(`Error when trying upload many files: ${error}`);
+		res.status(400);
+		return res.send(`Error uploading files: ${error}`);
 	}
 })
+
 
 }
