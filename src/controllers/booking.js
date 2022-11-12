@@ -11,8 +11,10 @@ module.exports = function(app){
 app.get(path("booking"), Auth, async (req, res) => {
 	let data = req.body;
 	const tenant = await Tenant.findOne({ _id: data.tenant });
-	result = await Booking.find({ tenant: tenant._id });
-	
+	let myOrders = await Booking.find({ tenant: tenant._id }).populate('tenant', '_id name type');
+	let brokersIds = tenant.brokers.map(i => i._id);
+	let myRetailsOrders = await Booking.find().where('tenant').in(brokersIds).populate('tenant', '_id name type');
+	let result = myOrders.concat(myRetailsOrders);
 	res.send(result)
 })
 
