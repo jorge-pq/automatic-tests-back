@@ -10,6 +10,8 @@ const schema = mongoose.Schema({
     order: [Object],
 	pay: Object,
 	state: String,
+	agencyInfo: Object,
+	employee: String,
 	tenant: { type: ObjectId, ref: "Tenant", required: false },
 })
 

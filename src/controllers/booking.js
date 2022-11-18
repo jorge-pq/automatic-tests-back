@@ -1,5 +1,6 @@
 const Auth = require('../middleware/auth.middleware');
 const Booking = require("../models/Booking")
+const User = require("../models/User")
 const Tenant = require("../models/Tenant")
 const {path} = require("../config");
 const mongoose = require("mongoose");
@@ -21,11 +22,20 @@ app.get(path("booking"), Auth, async (req, res) => {
 app.post(path("booking/create"), Auth, async (req, res) => {
 	let data = req.body;
 	const tenant = await Tenant.findOne({ _id: data.tenant });
+	const user = await User.findOne({ username: data.username, tenant: data.tenant })
 	const booking = new Booking(req.body);
 	booking.tenant = tenant;
 	booking.code = await getCode(data.hotel.code);
 	booking.state = PENDING;
 	booking.creationDate = new Date();
+	booking.agencyInfo = {
+		state: tenant.state,
+		city: tenant.city,
+		zipCode: tenant.zipCode,
+		phoneAgency: tenant.phoneAgency, 
+		address: tenant.address,
+	}
+	booking.employee = user.fullname;
 	await booking.save();
 	res.send(booking);
 })
