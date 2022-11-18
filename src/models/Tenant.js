@@ -22,7 +22,7 @@ const schema = mongoose.Schema({
   state: String,
   city: String,
   zipCode: String,
-  phone: String,  
+  phoneAgency: String,  
 	tenant: { type: ObjectId, ref: "Tenant", required: false },
 	brokers: [{ type: ObjectId, ref: "Tenant"}],
   hotels: [{ type: ObjectId, ref: "Hotel"}]
