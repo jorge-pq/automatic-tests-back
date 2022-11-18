@@ -18,6 +18,11 @@ const schema = mongoose.Schema({
      }
     },
 	type: RETAIL | WHOLESALER,
+  address: String,  
+  state: String,
+  city: String,
+  zipCode: String,
+  phone: String,  
 	tenant: { type: ObjectId, ref: "Tenant", required: false },
 	brokers: [{ type: ObjectId, ref: "Tenant"}],
   hotels: [{ type: ObjectId, ref: "Hotel"}]
