@@ -45,5 +45,16 @@ app.get(path("booking/:id"), Auth, async (req, res) => {
 	res.send(booking)
 })
 
+app.put(path("booking/update/:id"), Auth, async (req, res) => {
+	try {
+		let filter = { _id: req.params.id };
+		let values = req.body;
+		let booking = await Booking.findOneAndUpdate(filter, values)
+		res.send(booking)
+	} catch {
+		res.status(404)
+		res.send({ error: "Booking doesn't exist!" })
+	}
+})
 
 }
