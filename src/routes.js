@@ -3,4 +3,5 @@ module.exports = function (app) {
 	require("./controllers/user")(app);
 	require("./controllers/tenant")(app);
 	require("./controllers/booking")(app);
+	require("./controllers/roomtypes")(app);
 }
