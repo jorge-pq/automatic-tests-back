@@ -3,9 +3,9 @@ const Booking = require("../models/Booking")
 const User = require("../models/User")
 const Tenant = require("../models/Tenant")
 const {path} = require("../config");
-const mongoose = require("mongoose");
 const {getCode} = require('../service/util');
-const {PENDING, CANCELLED, CONFIRMED} = require('../contants');
+const {PENDING} = require('../contants');
+const {saveClient} = require('../service/client.service');
 
 module.exports = function(app){
 
@@ -37,6 +37,7 @@ app.post(path("booking/create"), Auth, async (req, res) => {
 	}
 	booking.employee = user.fullname;
 	await booking.save();
+	await saveClient(booking.client, tenant);
 	res.send(booking);
 })
 
