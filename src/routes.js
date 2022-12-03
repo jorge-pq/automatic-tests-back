@@ -5,4 +5,5 @@ module.exports = function (app) {
 	require("./controllers/booking")(app);
 	require("./controllers/roomtypes")(app);
 	require("./controllers/clients")(app);
+	require("./controllers/tours")(app);
 }

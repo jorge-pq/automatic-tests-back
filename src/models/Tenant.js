@@ -25,7 +25,8 @@ const schema = mongoose.Schema({
   phoneAgency: String,  
 	tenant: { type: ObjectId, ref: "Tenant", required: false },
 	brokers: [{ type: ObjectId, ref: "Tenant"}],
-  hotels: [{ type: ObjectId, ref: "Hotel"}]
+  hotels: [{ type: ObjectId, ref: "Hotel"}],
+  tours: [{ type: ObjectId, ref: "Tour"}]
 })
 
 
