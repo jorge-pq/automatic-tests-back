@@ -12,7 +12,7 @@ const schema = mongoose.Schema({
 	zipCode: String,
 	address: String,
 	active: { type: Boolean, default: false},
-	details: Object,
+	details: [Object],
 	images: [Object],
 	cover: String,
 	tenant: { type: ObjectId, ref: "Tenant", required: false },
