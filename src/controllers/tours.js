@@ -95,5 +95,18 @@ app.get(path("tours/slug/:slug"), Auth, async (req, res) => {
 })
 
 
+app.put(path("tour/details/add/:id"), Auth, async (req, res) => {
+	try {
+		const tour = await Tour.findOne({ _id: req.params.id })
+		tour.details = req.body.types;
+		await tour.save()
+		res.send(tour)
+	} catch {
+		res.status(404)
+		res.send({ error: "Tour doesn't exist!" })
+	}
+})
+
+
 
 }
