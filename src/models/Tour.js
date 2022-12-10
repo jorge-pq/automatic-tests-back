@@ -4,6 +4,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const schema = mongoose.Schema({
 	code: String,
+	category: String,
 	name: String,
 	slug: String,
 	country: String,
