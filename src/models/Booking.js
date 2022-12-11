@@ -3,6 +3,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const schema = mongoose.Schema({
 	code: String,
+	type: String,
 	creationDate: Date,
 	guests: [Object],
 	client: Object,
