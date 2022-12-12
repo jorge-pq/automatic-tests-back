@@ -4,7 +4,7 @@ const User = require("../models/User")
 const Tenant = require("../models/Tenant")
 const {path} = require("../config");
 const {getCode} = require('../service/util');
-const {PENDING} = require('../contants');
+const {PENDING, CONFIRMED} = require('../contants');
 const {saveClient} = require('../service/client.service');
 
 module.exports = function(app){
@@ -57,5 +57,23 @@ app.put(path("booking/update/:id"), Auth, async (req, res) => {
 		res.send({ error: "Booking doesn't exist!" })
 	}
 })
+
+app.get(path("booking/availability/:period"), Auth, async (req, res) => {
+	const bookings = await Booking.find({type: 'tour', state : { $in : [PENDING, CONFIRMED]}});
+	
+	let i = 0;
+	let flag = false;
+	let total = 0;
+	while (i<bookings.length && !flag) {
+		let p = bookings[i].order[0].period;
+		let parse = String(p).replace(/\//g, ".").replace(/ /g,"");
+		if(parse === req.params.period){
+			total++;
+		}
+		i++;
+	}
+	res.send({total: total})
+})
+
 
 }
