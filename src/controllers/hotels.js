@@ -99,7 +99,8 @@ app.delete(path("hotel/:id"), Auth, async (req, res) => {
 })
 
 app.get(path("hotel/slug/:slug"), Auth, async (req, res) => {
-	const hotel = await Hotel.findOne({ slug: req.params.slug });
+	let data = req.body;
+	const hotel = await Hotel.findOne({ slug: req.params.slug, tenant: data.tenant });
 	res.send(hotel)
 })
 

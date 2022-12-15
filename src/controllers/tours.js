@@ -91,7 +91,8 @@ app.delete(path("tours/:id"), Auth, async (req, res) => {
 })
 
 app.get(path("tours/slug/:slug"), Auth, async (req, res) => {
-	const tour = await Tour.findOne({ slug: req.params.slug });
+	let data = req.body;
+	const tour = await Tour.findOne({ slug: req.params.slug, tenant: data.tenant});
 	res.send(tour)
 })
 
