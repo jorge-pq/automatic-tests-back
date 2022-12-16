@@ -26,7 +26,7 @@ app.post(path("booking/create"), Auth, async (req, res) => {
 	const booking = new Booking(req.body);
 	booking.tenant = tenant;
 	booking.code = await getCode(data.hotel.code);
-	booking.state = PENDING;
+	booking.state = parseFloat(data.pay.balance) > 0 ? PENDING : CONFIRMED;
 	booking.creationDate = new Date();
 	booking.agencyInfo = {
 		state: tenant.state,
