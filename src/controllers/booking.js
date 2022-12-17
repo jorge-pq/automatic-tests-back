@@ -68,7 +68,8 @@ app.get(path("booking/availability/:period"), Auth, async (req, res) => {
 		let p = bookings[i].order[0].period;
 		let parse = String(p).replace(/\//g, ".").replace(/ /g,"");
 		if(parse === req.params.period){
-			total++;
+			let value = bookings[i].order.reduce((a, c) => (a + c.adults + c.childrensCount + (c.infantCount || 0)), 0);
+			total+=value;
 		}
 		i++;
 	}
