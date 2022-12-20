@@ -83,4 +83,10 @@ module.exports = function (app) {
 		}
 	})
 
+	app.post(path('users/:tenant'), Auth, async (req, res) => {
+		let users = await User.find({ tenant: req.params.tenant });
+		res.send(users);
+	})
+
+
 }
