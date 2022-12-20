@@ -1,9 +1,10 @@
 const Auth = require('../middleware/auth.middleware');
-const Booking = require("../models/Booking")
+const Booking = require("../models/Booking");
+const Tour = require("../models/Tour")
 const User = require("../models/User")
 const Tenant = require("../models/Tenant")
 const {path} = require("../config");
-const {getCode} = require('../service/util');
+const {getCode, format} = require('../service/util');
 const {PENDING, CONFIRMED} = require('../contants');
 const {saveClient} = require('../service/client.service');
 
@@ -58,7 +59,7 @@ app.put(path("booking/update/:id"), Auth, async (req, res) => {
 	}
 })
 
-app.get(path("booking/availability/:period"), Auth, async (req, res) => {
+app.get(path("booking/availability/:period/:tourId"), Auth, async (req, res) => {
 	const bookings = await Booking.find({type: 'tour', state : { $in : [PENDING, CONFIRMED]}});
 	
 	let i = 0;
@@ -67,7 +68,7 @@ app.get(path("booking/availability/:period"), Auth, async (req, res) => {
 	while (i<bookings.length && !flag) {
 		let p = bookings[i].order[0].period;
 		let parse = String(p).replace(/\//g, ".").replace(/ /g,"");
-		if(parse === req.params.period){
+		if(parse === req.params.period && bookings[i].hotel._id === req.params.tourId){
 			let value = bookings[i].order.reduce((a, c) => (a + c.adults + c.childrensCount + (c.infantCount || 0)), 0);
 			total+=value;
 		}
@@ -75,6 +76,34 @@ app.get(path("booking/availability/:period"), Auth, async (req, res) => {
 	}
 	res.send({total: total})
 })
+
+
+app.get(path("booking/availabilities/:tourId"), Auth, async (req, res) => {
+	const bookings = await Booking.find({type: 'tour', state : { $in : [PENDING, CONFIRMED]}});
+	const tour = await Tour.findOne({ _id: req.params.tourId });
+	let offers = tour.details;
+	let list = [];
+	offers.forEach(item => {
+
+		let date = `${item.isPeriod ? (format(new Date(item.period[0])) + ' - ' + format(new Date(item.period[1]))) : format(new Date(item.date))}`;
+		let parse2 = String(date).replace(/\//g, ".").replace(/ /g,"");
+
+		let obj = {
+			period: parse2, 
+			avalaibility: item.availability, 
+			persons: 0
+		}
+
+		let p = bookings.filter(d=>String(d.order[0].period).replace(/\//g, ".").replace(/ /g,"")===parse2 && d.hotel._id === tour._id.toString())
+		let persons = p.reduce((a, c) => (a + c.order[0].adults + c.order[0].childrensCount + (c.order[0].infantCount || 0)), 0);;
+		obj.persons = persons;
+		list.push(obj);
+	});
+
+	res.send({data: list})
+})
+
+
 
 
 }
