@@ -4,6 +4,8 @@ const {Sign} = require("../service/jwtAuth");
 const { path } = require("../config");
 const {register, validateFields, validateUser} = require('../service/auth.service');
 const Auth = require('../middleware/auth.middleware');
+bcrypt = require('bcryptjs');
+
 
 module.exports = function (app) {
 
@@ -86,6 +88,24 @@ module.exports = function (app) {
 	app.post(path('users/:tenant'), Auth, async (req, res) => {
 		let users = await User.find({ tenant: req.params.tenant });
 		res.send(users);
+	})
+
+	
+	app.put(path("user/password"), Auth, async (req, res) => {
+		try {
+			const user = await User.findOne({ _id: req.body.userId })
+	
+			if (req.body.password) {
+				let password = bcrypt.hashSync(req.body.password, 8);
+				user.password = password;
+			}
+	
+			await user.save()
+			res.send({ msj: "Password updated!" })
+		} catch {
+			res.status(404)
+			res.send({ error: "User doesn't exist!" })
+		}
 	})
 
 
