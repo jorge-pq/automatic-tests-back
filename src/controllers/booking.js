@@ -79,7 +79,7 @@ app.get(path("booking/availability/:period/:tourId"), Auth, async (req, res) => 
 
 
 app.get(path("booking/availabilities/:tourId"), Auth, async (req, res) => {
-	const bookings = await Booking.find({type: 'tour', state : { $in : [PENDING, CONFIRMED]}});
+	const bookings = await Booking.find({type: 'tour', state : { $in : [PENDING, CONFIRMED]}}).populate('tenant', '_id name type');;
 	const tour = await Tour.findOne({ _id: req.params.tourId });
 	let offers = tour.details;
 	let list = [];
@@ -95,8 +95,11 @@ app.get(path("booking/availabilities/:tourId"), Auth, async (req, res) => {
 		}
 
 		let p = bookings.filter(d=>String(d.order[0].period).replace(/\//g, ".").replace(/ /g,"")===parse2 && d.hotel._id === tour._id.toString())
-		let persons = p.reduce((a, c) => (a + c.order[0].adults + c.order[0].childrensCount + (c.order[0].infantCount || 0)), 0);;
+		let persons = p.reduce((a, c) => (a + c.order[0].adults + c.order[0].childrensCount + (c.order[0].infantCount || 0)), 0);
 		obj.persons = persons;
+		let guests = [];
+		p.map(item => guests.push({agency: item.tenant.name, persons: item.guests}))
+		obj.guests = guests;
 		list.push(obj);
 	});
 
