@@ -30,9 +30,15 @@ app.post(path("clients/import"), Auth, async (req, res) => {
 		obj.tenant = tenant;
 		clients.push(obj);
 	})
-	await Client.insertMany(clients);
-	res.send({message: 'Clients added succesfully!'});
-
+	try {
+		await Client.insertMany(clients);
+		res.send({message: 'Clients added succesfully!'});
+	} catch (error) {
+		console.log(error)
+		res.status(404)
+		res.send({ error: "Error!" })
+	}
+	
 })
 
 app.put(path("clients/:id"), Auth, async (req, res) => {
