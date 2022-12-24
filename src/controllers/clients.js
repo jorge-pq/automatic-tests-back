@@ -20,6 +20,21 @@ app.post(path("clients/create"), Auth, async (req, res) => {
 	res.send({message: 'Client added succesfully!'});
 })
 
+app.post(path("clients/import"), Auth, async (req, res) => {
+
+	let data = req.body.bulk;
+	const tenant = await Tenant.findOne({ _id: req.body.tenant });
+	let clients = [];
+	data.map(item => {
+		let obj = item;
+		obj.tenant = tenant;
+		clients.push(obj);
+	})
+	await Client.insertMany(clients);
+	res.send({message: 'Clients added succesfully!'});
+
+})
+
 app.put(path("clients/:id"), Auth, async (req, res) => {
 	
 	try {
