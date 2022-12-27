@@ -4,13 +4,19 @@ const Tenant = require("../models/Tenant");
 const {path} = require("../config");
 const {saveClient} = require('../service/client.service');
 
+const COUNT_PER_PAGE = 50;
 
 module.exports = function(app){
 
 app.get(path("clients"), Auth, async (req, res) => {
 	let data = req.body;
-	let clients = await Client.find({ tenant: data.tenant });
-	res.send(clients);
+	let page = req.query.page;
+	let clients = await Client.find({ tenant: data.tenant })
+							  .skip((parseInt(page)-1)*COUNT_PER_PAGE)
+							  .limit(COUNT_PER_PAGE);
+
+	let total_items = await Client.countDocuments({});
+	res.send({data: clients, pages: Math.ceil(total_items/COUNT_PER_PAGE)});
 })
 
 app.post(path("clients/create"), Auth, async (req, res) => {
