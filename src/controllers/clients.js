@@ -75,5 +75,12 @@ app.put(path("clients/:id"), Auth, async (req, res) => {
 	}
 })
 
+app.post(path("clients/search-phone"), Auth, async (req, res) => {
+	let data = req.body;
+	let client = await Client.findOne({ phone: data.phone, tenant: data.tenant });
+	res.send(client);
+})
+
+
 
 }
