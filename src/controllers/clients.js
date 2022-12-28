@@ -15,7 +15,7 @@ app.get(path("clients"), Auth, async (req, res) => {
 							  .skip((parseInt(page)-1)*COUNT_PER_PAGE)
 							  .limit(COUNT_PER_PAGE);
 
-	let total_items = await Client.countDocuments({});
+	let total_items = await Client.countDocuments({tenant: data.tenant});
 	res.send({data: clients, pages: Math.ceil(total_items/COUNT_PER_PAGE)});
 })
 
