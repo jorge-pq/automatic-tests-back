@@ -4,6 +4,9 @@ const Tour = require("../models/Tour");
 const {path} = require("../config");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Schema.Types.ObjectId;
+const uploader = require("../middleware/multer");
+const {upload} = require("../service/cloud.service");
+
 
 module.exports = function(app){
 
@@ -106,6 +109,39 @@ app.put(path("tour/details/add/:id"), Auth, async (req, res) => {
 	} catch {
 		res.status(404)
 		res.send({ error: "Tour doesn't exist!" })
+	}
+})
+
+
+app.post(path("tours/gallery"), Auth, async (req, res) => {
+	try {
+		await uploader(req, res);
+		if (req.files) {
+			const tour = await Tour.findOne({ _id: req.body.id });
+			let imgs = [];
+			let main = req.files.main ? req.files.main[0].originalname : null;
+			if(main){
+				let url = await upload(req.files.main[0].path);
+				tour.cover = url;
+			}
+			let images = req.files.images ? req.files.images : [];
+			for (let index = 0; index < images.length; index++) {
+				let url = await upload(images[index].path);
+				imgs.push({path: url, active: true});
+			}
+		
+			tour.images = tour.images.concat(imgs);
+			await tour.save();
+			res.status(200);
+			return res.send(`Files has been uploaded.`);
+		} else {
+			res.status(400);
+			return res.send(`You must select at least 1 file.`);
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(400);
+		return res.send(`Error uploading files: ${error}`);
 	}
 })
 
