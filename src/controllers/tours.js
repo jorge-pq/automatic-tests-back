@@ -95,7 +95,14 @@ app.delete(path("tours/:id"), Auth, async (req, res) => {
 
 app.get(path("tours/slug/:slug"), Auth, async (req, res) => {
 	let data = req.body;
-	const tour = await Tour.findOne({ slug: req.params.slug, tenant: data.tenant});
+	const tenant = await Tenant.findOne({ _id: data.tenant });
+	let tour;
+	if(tenant.type === "Wholesaler"){
+		tour = await Tour.findOne({ slug: req.params.slug, tenant: tenant._id});
+	}
+	else{
+		tour = await Tour.findOne({ slug: req.params.slug, tenant: tenant.tenant});
+	}
 	res.send(tour)
 })
 
