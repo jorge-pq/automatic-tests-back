@@ -108,5 +108,23 @@ module.exports = function (app) {
 		}
 	})
 
+		
+	app.put(path("user/update"), Auth, async (req, res) => {
+		try {
+			const user = await User.findOne({ _id: req.body.id })
+	
+			if (req.body.phone && req.body.fullname) {
+				user.fullname = req.body.fullname;
+				user.username = req.body.phone;
+				user.phone = req.body.phone;
+			}
+	
+			await user.save()
+			res.send({ msj: "user updated!" })
+		} catch {
+			res.status(404)
+			res.send({ error: "User doesn't exist!" })
+		}
+	})
 
 }
