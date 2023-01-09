@@ -117,6 +117,7 @@ module.exports = function (app) {
 				user.fullname = req.body.fullname;
 				user.username = req.body.phone;
 				user.phone = req.body.phone;
+				user.role = req.body.role;
 			}
 	
 			await user.save()
