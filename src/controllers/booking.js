@@ -35,6 +35,7 @@ app.post(path("booking/create"), Auth, async (req, res) => {
 		zipCode: tenant.zipCode,
 		phoneAgency: tenant.phoneAgency, 
 		address: tenant.address,
+		name: tenant.name
 	}
 	booking.employee = user.fullname;
 	await booking.save();
