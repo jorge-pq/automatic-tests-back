@@ -14,7 +14,8 @@ module.exports = function (app) {
 
 		try {
 			const user = await User.findOne({
-				username: username
+				username: username,
+				active: true
 			}).populate('tenant');
 			if (!user) {
 				res.status(401).json({
