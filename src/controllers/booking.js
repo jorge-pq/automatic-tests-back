@@ -8,16 +8,23 @@ const {getCode, format} = require('../service/util');
 const {PENDING, CONFIRMED} = require('../contants');
 const {saveClient} = require('../service/client.service');
 
+const COUNT_PER_PAGE = 50;
+
+
 module.exports = function(app){
 
 app.get(path("booking"), Auth, async (req, res) => {
 	let data = req.body;
+	let page = req.query.page;
 	const tenant = await Tenant.findOne({ _id: data.tenant });
 	let myOrders = await Booking.find({ tenant: tenant._id }).populate('tenant', '_id name type');
 	let brokersIds = tenant.brokers.map(i => i._id);
 	let myRetailsOrders = await Booking.find().where('tenant').in(brokersIds).populate('tenant', '_id name type');
 	let result = myOrders.concat(myRetailsOrders);
-	res.send(result)
+	let orderByDate = result.sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())
+	let total_items = parseInt(orderByDate.length);
+	let paginated = orderByDate.slice((parseInt(page)-1) * COUNT_PER_PAGE, parseInt(page) * COUNT_PER_PAGE)
+	res.send({data: paginated, pages: Math.ceil(total_items/COUNT_PER_PAGE)})
 })
 
 app.post(path("booking/create"), Auth, async (req, res) => {
