@@ -62,6 +62,7 @@ app.put(path("tours/:id"), Auth, async (req, res) => {
 		if (req.body.name) {
 			tour.code = req.body.code;
 			tour.name = req.body.name;
+			tour.description = req.body.description
 			tour.category = req.body.category;
 			tour.slug = req.body.slug;
 			tour.country = req.body.country,
