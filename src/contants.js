@@ -6,10 +6,15 @@ const PENDING = "Pendiente";
 const CONFIRMED = "Confirmado";
 const CANCELLED = "Cancelado";
 
+const TODAY = "today";
+const MONTH = "month";
+
 module.exports = {
     RETAIL,
     WHOLESALER,
     PENDING,
     CONFIRMED,
-    CANCELLED
+    CANCELLED,
+    TODAY,
+    MONTH
 }

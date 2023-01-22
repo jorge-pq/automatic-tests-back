@@ -1,4 +1,5 @@
 const Booking = require("../models/Booking");
+const {MONTH} = require('../contants');
 
 const getCode = async (code) => {
    let count = await Booking.countDocuments({});
@@ -18,6 +19,19 @@ const format = date => {
     return formattedDate;
 }
 
+const getDateRange = (type) => {
+    let d = new Date();
+    let range = {
+        from: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0),
+        to: new Date(d.getFullYear(), d.getMonth(), d.getDate()+1, 0,0,0)
+    };
+    if(type===MONTH){
+        range.from = new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0);
+        range.to = new Date(d.getFullYear(), d.getMonth()+1, 1, 0, 0, 0);
+    }
+    return range;
+}
+
 module.exports = {
-    getCode, format
+    getCode, format, getDateRange
 }

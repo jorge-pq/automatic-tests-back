@@ -6,10 +6,16 @@ const mongoose = require("mongoose");
 const ObjectId = mongoose.Schema.Types.ObjectId;
 const uploader = require("../middleware/multer");
 const {upload} = require("../service/cloud.service");
+const Booking = require("../models/Booking");
+const {CONFIRMED} = require('../contants');
+const {getDateRange} = require('../service/util');
+
+
+
+const COUNT_PER_PAGE_BY_REPORT = 10;
 
 
 module.exports = function(app){
-
 
 app.get(path("tours"), Auth, async (req, res) => {
 	let data = req.body;
@@ -24,6 +30,7 @@ app.get(path("tours"), Auth, async (req, res) => {
 	
 	res.send(result.tours)
 })
+
 
 app.get(path("tours/active"), Auth, async (req, res) => {
 	let data = req.body;
@@ -153,6 +160,42 @@ app.post(path("tours/gallery"), Auth, async (req, res) => {
 	}
 })
 
+//---------------------------------------- Report -----------------------------------------
+
+app.get(path("tours/report/sales"), Auth, async (req, res) => {
+	let data = req.body;
+	let page = req.query.page;
+	let date = req.query.date;
+	const tenant = await Tenant.findOne({ _id: data.tenant });
+	let result = await Tenant.findOne({ _id: tenant._id }).populate('tours');
+	let tours = result.tours;
+
+	let total_items = parseInt(tours.length);
+	let tours_paginated = tours.slice((parseInt(page)-1) * COUNT_PER_PAGE_BY_REPORT, parseInt(page) * COUNT_PER_PAGE_BY_REPORT);
+
+	let report = [];
+	let range = getDateRange(date);
+
+	for (const item of tours_paginated) {
+        const bookings = await Booking.find({
+			type: 'tour', 
+			state : CONFIRMED, 
+			'hotel.name': item.name,
+			creationDate: {
+				$gte: range.from, 
+				$lt: range.to
+			}
+		});
+        report.push({
+			name: item.name,
+			total: bookings.reduce((a, c) => (a+parseFloat(c.pay.total)),0)
+		});
+    }
+	
+
+	res.send({data: report, pages: Math.ceil(total_items/COUNT_PER_PAGE_BY_REPORT)})
+	
+})
 
 
 }
