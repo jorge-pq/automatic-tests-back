@@ -27,6 +27,16 @@ app.get(path("booking"), Auth, async (req, res) => {
 	res.send({data: paginated, pages: Math.ceil(total_items/COUNT_PER_PAGE)})
 })
 
+app.get(path("booking/count"), Auth, async (req, res) => {
+	let data = req.body;
+	const tenant = await Tenant.findOne({ _id: data.tenant });
+	let countWholesaler = await Booking.countDocuments({ tenant: tenant._id });
+	let brokersIds = tenant.brokers.map(i => i._id);
+	let myRetailsOrders = await Booking.find().where('tenant').in(brokersIds);
+	let result = countWholesaler + myRetailsOrders.length;
+	res.send({total: result});
+})
+
 app.post(path("booking/create"), Auth, async (req, res) => {
 	let data = req.body;
 	const tenant = await Tenant.findOne({ _id: data.tenant });

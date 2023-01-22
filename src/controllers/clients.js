@@ -19,6 +19,14 @@ app.get(path("clients"), Auth, async (req, res) => {
 	res.send({data: clients, pages: Math.ceil(total_items/COUNT_PER_PAGE)});
 })
 
+
+app.get(path("clients/count"), Auth, async (req, res) => {
+	let data = req.body;
+
+	let total_items = await Client.countDocuments({tenant: data.tenant});
+	res.send({total: total_items});
+})
+
 app.post(path("clients/create"), Auth, async (req, res) => {
 	let data = req.body;
 	const tenant = await Tenant.findOne({ _id: data.tenant });
