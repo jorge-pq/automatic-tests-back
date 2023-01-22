@@ -1,8 +1,14 @@
 const Auth = require('../middleware/auth.middleware');
-const Tenant = require("../models/Tenant")
+const Tenant = require("../models/Tenant");
+const Booking = require("../models/Booking");
 const {RETAIL, WHOLESALER} = require("../contants");
 const { path } = require("../config");
 const {register, validateFields} = require('../service/auth.service');
+const {CONFIRMED} = require('../contants');
+const {getDateRange} = require('../service/util');
+
+const COUNT_PER_PAGE_BY_REPORT = 10;
+
 
 module.exports = function (app) {
 
@@ -85,5 +91,42 @@ module.exports = function (app) {
             res.status(400).json(error);
         }  
     })
+
+    //---------------------------------------- Report -----------------------------------------
+
+app.get(path("tenant/report/sales"), Auth, async (req, res) => {
+	let data = req.body;
+	let page = req.query.page;
+	let date = req.query.date;
+	const tenant = await Tenant.findOne({ _id: data.tenant }).populate('brokers');
+	let agencies = tenant.brokers;
+    agencies.push(tenant);
+
+	let total_items = parseInt(agencies.length);
+	let agencies_paginated = agencies.slice((parseInt(page)-1) * COUNT_PER_PAGE_BY_REPORT, parseInt(page) * COUNT_PER_PAGE_BY_REPORT);
+
+	let report = [];
+	let range = getDateRange(date);
+
+	for (const item of agencies_paginated) {
+        const bookings = await Booking.find({
+			state : CONFIRMED, 
+			'agencyInfo.name': item.name,
+			creationDate: {
+				$gte: range.from, 
+				$lt: range.to
+			}
+		});
+
+        report.push({
+			name: item.name,
+			total: bookings.reduce((a, c) => (a+parseFloat(c.pay.total)),0)
+		});
+    }
+	
+
+	res.send({data: report, pages: Math.ceil(total_items/COUNT_PER_PAGE_BY_REPORT)})
+	
+})
 
 }
