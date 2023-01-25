@@ -125,13 +125,17 @@ app.get(path("booking/availabilities/:tourId"), Auth, async (req, res) => {
 })
 
 app.put(path("booking/addpaid/:id"), Auth, async (req, res) => {
+	const booking = await Booking.findOne({ _id: req.params.id })
 	try {
 		let values = {
 			type: req.body.type,
 			amount: req.body.amount,
 			date: new Date()
 		} ;
-		const t = await Booking.updateOne({_id: req.params.id}, {'$push':  {paids: values}})
+
+		let newBalance = parseFloat(booking.pay.balance) - parseFloat(req.body.amount);
+		let state = newBalance === 0 ? CONFIRMED : booking.state;
+		const t = await Booking.updateOne({_id: req.params.id}, {'$push':  {paids: values}, '$set': {'pay.balance':newBalance, state: state}})
 		
 		res.send({message: 'Paid added succesfully'})
 	} catch {
