@@ -13,6 +13,7 @@ const schema = mongoose.Schema({
 	state: String,
 	agencyInfo: Object,
 	employee: String,
+	paids: [Object],
 	tenant: { type: ObjectId, ref: "Tenant", required: false },
 })
 

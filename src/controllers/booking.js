@@ -124,7 +124,21 @@ app.get(path("booking/availabilities/:tourId"), Auth, async (req, res) => {
 	res.send({data: list})
 })
 
-
+app.put(path("booking/addpaid/:id"), Auth, async (req, res) => {
+	try {
+		let values = {
+			type: req.body.type,
+			amount: req.body.amount,
+			date: new Date()
+		} ;
+		const t = await Booking.updateOne({_id: req.params.id}, {'$push':  {paids: values}})
+		
+		res.send({message: 'Paid added succesfully'})
+	} catch {
+		res.status(404)
+		res.send({ error: "Booking doesn't exist!" })
+	}
+})
 
 
 }
