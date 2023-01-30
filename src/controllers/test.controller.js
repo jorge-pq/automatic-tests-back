@@ -13,7 +13,6 @@ app.post(path("test/create/:appId"), async (req, res) => {
 		res.status(404)
 		res.send({ error: "Error!" })
 	}
-	res.send(result);
 })
 
 
