@@ -4,7 +4,6 @@ const {DB} = require("./src/config")
 const routes = require("./src/routes") 
 const cors = require("cors")
 const path = require("path");
-const {seed} = require('./src/service/seed');
 
 mongoose.connect(DB, { useNewUrlParser: true, useUnifiedTopology: true })
 	.then(() => {
@@ -12,7 +11,6 @@ mongoose.connect(DB, { useNewUrlParser: true, useUnifiedTopology: true })
 		app.use('/public',express.static(path.join(__dirname, 'public/')));
 		app.use(cors());
 		app.use(express.json({limit: '50mb'}));
-		seed();
 		routes(app);
 
 		const PORT = process.env.PORT || 8080;
