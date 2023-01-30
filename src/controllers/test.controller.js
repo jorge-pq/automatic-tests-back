@@ -1,7 +1,31 @@
-const {create, update} = require("../service/test.service");
+const {create, update, getAll, getById} = require("../service/test.service");
 const {path} = require("../config");
 
 module.exports = function(app){
+
+
+app.get(path("tests"), async (req, res) => {
+	try {
+       let result = await getAll();
+       res.send(result)
+    } catch (error) {
+        res.status(404)
+		res.send({ error: "Error!" })
+    }
+	
+})
+
+app.get(path("test/:id"), async (req, res) => {
+	try {
+       let result = await getById(req.params.id);
+       res.send(result)
+    } catch (error) {
+        res.status(404)
+		res.send({ error: "Error!" })
+    }
+	
+})
+
 
 app.post(path("test/create/:appId"), async (req, res) => {
 	let data = req.body;

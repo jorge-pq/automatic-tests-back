@@ -1,6 +1,16 @@
 const Application = require("../models/Application");
 const Test = require("../models/Test");
 
+const getAll = async () => {
+	let tests =  await Test.find({});
+	return tests;
+}
+
+const getById = async (id) => {
+	let test =  await Test.findOne({ _id: id});
+	return test;
+}
+
 const create = async (appId, data) => {
     const app = await Application.findOne({ _id: appId });
 	const test = new Test(data);
@@ -25,5 +35,7 @@ const update = async (id, data) => {
 
 module.exports = {
     create,
-    update
+    update,
+	getAll,
+	getById
 }
