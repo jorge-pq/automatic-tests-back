@@ -8,6 +8,7 @@ const schema = mongoose.Schema({
 	method: String,
 	typeTest: String,
 	expect: String,
+	response: String,
 	app: { type: ObjectId, ref: "Application" },
 })
 
