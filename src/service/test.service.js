@@ -40,7 +40,7 @@ const runTests  = async (id) => {
 
 	tests.forEach(item => {
 		switch (item.typeTest) {
-			case 'EQUAL':
+			case 'STATUS':
 				if(parseFloat(item.expect) === parseFloat(item.status)){
 					result.push({id: item._id, description: item.description, isSuccess: true});
 				}
@@ -56,7 +56,7 @@ const runTests  = async (id) => {
 					result.push({id: item._id, description: item.description, isSuccess: false});
 				}
 				break;
-			case 'STATUS':
+			case 'EQUAL':
 				if(item.response === item.expect){
 					result.push({id: item._id, description: item.description, isSuccess: true});
 				}
