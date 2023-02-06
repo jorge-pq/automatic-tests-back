@@ -33,9 +33,47 @@ const update = async (id, data) => {
 		await test.save();
 }
 
+const runTests  = async (id) => {
+
+	let result = [];
+	let tests =  await Test.find({ app: id});
+
+	tests.forEach(item => {
+		switch (item.typeTest) {
+			case 'EQUAL':
+				if(parseFloat(item.expect) === parseFloat(item.status)){
+					result.push({id: item._id, description: item.description, isSuccess: true});
+				}
+				else{
+					result.push({id: item._id, description: item.description, isSuccess: false});
+				}
+				break;
+			case 'CONTAINS':
+				if(String(item.response).includes(item.expect)){
+					result.push({id: item._id, description: item.description, isSuccess: true});
+				}
+				else{
+					result.push({id: item._id, description: item.description, isSuccess: false});
+				}
+				break;
+			case 'STATUS':
+				if(item.response === item.expect){
+					result.push({id: item._id, description: item.description, isSuccess: true});
+				}
+				else{
+					result.push({id: item._id, description: item.description, isSuccess: false});
+				}
+				break;
+		}
+	});
+
+	return result;
+}
+
 module.exports = {
     create,
     update,
 	getAll,
-	getById
+	getById,
+	runTests
 }

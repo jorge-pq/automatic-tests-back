@@ -1,4 +1,4 @@
-const {create, update, getAll, getById} = require("../service/test.service");
+const {create, update, getAll, getById, runTests} = require("../service/test.service");
 const {path} = require("../config");
 
 module.exports = function(app){
@@ -52,5 +52,16 @@ app.put(path("test/update/:id"), async (req, res) => {
 	}
 })
 
+
+app.get(path("test/runAll/:id"), async (req, res) => {
+	try {
+       let result = await runTests(req.params.id);
+       res.send(result)
+    } catch (error) {
+        res.status(404)
+		res.send({ error: "Error!" })
+    }
+	
+})
 
 }
