@@ -10,6 +10,10 @@ const schema = mongoose.Schema({
 	expect: String,
 	response: String,
 	status: String,
+	params: [Object],
+	headers: [Object],
+	bodyRaw: String,
+	bodyForm: [Object],
 	app: { type: ObjectId, ref: "Application" },
 })
 

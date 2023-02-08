@@ -27,7 +27,11 @@ const update = async (id, data) => {
 			test.url = data.url;
 			test.method = data.method;
 			test.typeTest = data.typeTest,
-			test.expect = data.expect
+			test.expect = data.expect,
+			test.params = data.params,
+			test.headers = data.headers,
+			test.bodyRaw = data.bodyRaw,
+			test.bodyForm = data.bodyForm
 		}
 
 		await test.save();
