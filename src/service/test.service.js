@@ -31,7 +31,8 @@ const update = async (id, data) => {
 			test.params = data.params,
 			test.headers = data.headers,
 			test.bodyRaw = data.bodyRaw,
-			test.bodyForm = data.bodyForm
+			test.bodyForm = data.bodyForm,
+			test.response = data.response
 		}
 
 		await test.save();
