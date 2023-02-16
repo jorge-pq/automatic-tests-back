@@ -5,6 +5,12 @@ const getAll = async () => {
    return apps;
 }
 
+const create = async (data) => {
+	const app = new Application(data);
+	await app.save();
+}
+
+
 module.exports = {
-    getAll
+    getAll, create
 }
