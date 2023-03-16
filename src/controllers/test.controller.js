@@ -1,4 +1,4 @@
-const {create, update, getAll, getById, runTests} = require("../service/test.service");
+const {create, update, getAll, getById, runTests, removeTest} = require("../service/test.service");
 const {path} = require("../config");
 
 module.exports = function(app){
@@ -61,7 +61,18 @@ app.get(path("test/runAll/:id"), async (req, res) => {
         res.status(404)
 		res.send({ error: "Error!" })
     }
-	
 })
+
+
+app.delete(path("test/remove/:id"), async (req, res) => {
+	try {
+       await removeTest(req.params.id);
+       res.send({ message: "Deleted!" });
+    } catch (error) {
+        res.status(404)
+		res.send({ error: "Error!" })
+    }
+})
+
 
 }

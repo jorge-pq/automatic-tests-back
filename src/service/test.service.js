@@ -11,6 +11,12 @@ const getById = async (id) => {
 	return test;
 }
 
+const removeTest = async (id) => {
+	let test =  await Test.findOne({ _id: id});
+	await Test.deleteOne({ _id: id });
+	await Application.updateOne({_id: test.app}, {'$pull':  {tests: id}})
+}
+
 const create = async (appId, data) => {
     const app = await Application.findOne({ _id: appId });
 	const test = new Test(data);
@@ -80,5 +86,6 @@ module.exports = {
     update,
 	getAll,
 	getById,
-	runTests
+	runTests,
+	removeTest
 }
